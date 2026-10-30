@@ -1,0 +1,39 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tasklist</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="conteiner">
+        <h1>tasklist</h1>
+        <div class="add-task">
+            <input type="text" id="taskInput" placeholder="Введите название задачи">
+            <select  id="prioritySelect">
+                <option value="low">низкий</option>
+                <option value="normal">обычный</option>
+                <option value="high">высокий</option>
+            </select>
+            <button id="addButton">Добавить</button>
+        </div>
+        <div class="taskList"></div>
+    </div>
+    <div class="model", id="modelWindow">
+        <div class="modelContent">
+            <h2>Редактирование задачи</h2>
+            <input type="text" id="editTask" placeholder="Введите новое название задачи">
+            <select  id="editPrioritySelect">
+                <option value="low">низкий</option>
+                <option value="normal">обычный</option>
+                <option value="high">высокий</option>
+            </select>
+            <div class="modelButton">
+                <button class="saveEditBtn">✓</button>
+                <button class="cancelEditBtn">✕</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

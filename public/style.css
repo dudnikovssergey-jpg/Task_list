@@ -1,0 +1,117 @@
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background: rgb(64, 63, 58);
+}
+.conteiner {
+    width: 600px;
+    margin: 50px auto;
+    background: rgb(249, 233, 233);
+    padding: 20px;
+    border-radius: 20px;
+}
+h1 {
+    text-align: center;
+}
+.add-task {
+    display:flex;
+    gap: 10px;
+    margin-bottom: 10px;
+} 
+input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    background: rgb(216, 196, 218);
+}
+button {
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    background: rgb(216, 196, 218);
+    cursor:pointer;
+}
+input:hover{
+    background: rgb(178, 146, 181);
+} 
+button:hover{
+    background: rgb(178, 146, 181);
+}
+.task {
+    background: rgb(178, 146, 181);
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.task.high {
+    background: rgb(155, 104, 159);
+}
+.task.normal {
+    background: rgb(160, 122, 163);
+}
+
+.task.low {
+    background: rgb(183, 156, 185);
+}
+select {
+    padding: 10px;
+    border-radius: 20px;
+    background: rgb(216, 196, 218);
+}
+select:hover {
+    background: rgb(178, 146, 181);
+}
+
+.delete_button {
+     padding: 10px;
+    border-radius: 20px;
+    border: none;
+    background: rgb(216, 196, 218);
+    cursor:pointer;
+    margin-left: auto;
+}
+
+.delete_button:hover {
+    background: rgb(178, 146, 181);
+}
+
+.task.completed span {
+    text-decoration: line-through;
+
+}
+.edit_button {
+    padding: 10px;
+    border-radius: 20px;
+    border: none;
+    background: rgb(216, 196, 218);
+    cursor:pointer;
+    margin-left: auto; 
+}
+.model {
+    position:fixed;
+    left:0;
+    top:0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+.modelContent {
+    background-color: rgb(198, 109, 109);
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 300px;
+}
+.modelButton {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
