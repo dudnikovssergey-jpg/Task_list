@@ -61,7 +61,7 @@ app.get("/tasks", (req, res) => {
     const completed = req.query.completed
     const sort = req.query.sort
     const order = req.query.order
-    const priority = req.quary.priority
+    const priority = req.query.priority
     if(priority) {
        const tasks = db.prepare(`
       SELECT *
@@ -75,7 +75,7 @@ app.get("/tasks", (req, res) => {
                 SELECT * 
                 FROM TASKS
                 WHERE completed = 1
-            `)
+            `).all()
         return res.json(tasks)
     }
     if(completed === 'false') {
@@ -83,7 +83,7 @@ app.get("/tasks", (req, res) => {
                 SELECT * 
                 FROM TASKS
                 WHERE completed = 0
-            `)
+            `).all()
         return res.json(tasks)
     }
     if(sort === 'id' && order === "asc") {
@@ -91,7 +91,7 @@ app.get("/tasks", (req, res) => {
                 SELECT * 
                 FROM TASKS
                 ORDER BY id ASC
-            `)
+            `).all()
          return res.json(tasks)
     }
     if(sort === 'id' && order === "desc") {
@@ -99,7 +99,7 @@ app.get("/tasks", (req, res) => {
                 SELECT * 
                 FROM TASKS
                 ORDER BY id DESC
-            `)
+            `).all()
          return res.json(tasks)
     }
     if(sort === 'title' && order === "asc") {
@@ -107,7 +107,7 @@ app.get("/tasks", (req, res) => {
                 SELECT * 
                 FROM TASKS
                 ORDER BY title ASC
-            `)
+            `).all()
          return res.json(tasks)
     }
      if(sort === 'title' && order === "desc") {
@@ -115,7 +115,7 @@ app.get("/tasks", (req, res) => {
                 SELECT * 
                 FROM TASKS
                 ORDER BY title DESC
-            `)
+            `).all()
          return res.json(tasks)
     }
     const tasks = db.prepare(`
@@ -123,7 +123,7 @@ app.get("/tasks", (req, res) => {
         FROM tasks  
     `).all()
     res.json(tasks) 
-}
+})
 
     // const letter = req.query.letter
     // let found = false
@@ -139,14 +139,14 @@ app.get("/tasks", (req, res) => {
     //     return
     // }
 
-    if(TaskList.length === 0) {
-        res.json({
-            "message": "Задач пока нет"
-        })
-    } else{
-        res.json(TaskList)
-    }    
-})
+//     if(TaskList.length === 0) {
+//         res.json({
+//             "message": "Задач пока нет"
+//         })
+//     } else{
+//         res.json(TaskList)
+//     }    
+//  })
 
 app.get("/info", (req, res) => {
     res.json({
@@ -170,9 +170,13 @@ app.get("/status", (req, res) => {
 })
 
 app.get("/tasks/:id_task", (req, res) => {
-    loadTasks()
+    // loadTasks()
     let idtask = Number(req.params.id_task)
-    const task = TaskList.find(task => task.id === idtask)
+    const task = db.prepare(`
+        SELECT *
+        FROM tasks
+        WHERE id = ?
+        `).get(idtask)
     if(!task) {
         return res.status(404).json({
             message: "Задач таких нет"
@@ -182,8 +186,6 @@ app.get("/tasks/:id_task", (req, res) => {
 })
 
 app.post("/tasks", (req, res) => {
-    // console.log(req.body)
-    // res.send('Запрос получен')
     if(!req.body.title || req.body.title.trim() === '') {
         return res.status(400).json({
            message: 'Название задач не может быть пустым'  
@@ -195,31 +197,33 @@ app.post("/tasks", (req, res) => {
             message: 'Некорректно введен приоритет'
         })
     }
-    let next_id = 1
-    if(TaskList.length > 0) {
-        next_id = Math.max(...TaskList.map(task => task.id)) + 1
-    }
-    const newTask = {
-        id: next_id,
-        title: req.body.title,
-        priority: req.body.priority,
-        completed: false
-    }
-    TaskList.push(newTask)
-    saveTasks()
+    const title = req.body.title
+    const priority = req.body.priority
+    const result = db.prepare(`
+        INSERT INTO tasks(
+        title, priority, completed)
+        VALUES(?, ?, ?)
+        `).run(title, priority, 0)
+    const newTask = db.prepare(`
+            SELECT *
+            FROM tasks
+            WHERE id = ? 
+        `).get(result.lastInsertRowid)
     res.status(201).json(newTask)
 })
 
 app.delete("/tasks/:id_task", (req, res) => {
     let delete_id_task = Number(req.params.id_task)
-    const task_index = TaskList.findIndex(task => task.id === delete_id_task)
-     if(task_index === -1) {
+    const result = db.prepare(`
+        DELETE 
+        FROM tasks
+        WHERE id = ?
+        `).run(delete_id_task)
+     if(result.changes === 0) {
         return res.status(404).json({
             message: "Задач таких нет"
         })
     }
-    TaskList.splice(task_index, 1)
-    saveTasks()
     res.status(200).json({
         message: "Задача удалена"
     })
@@ -227,8 +231,11 @@ app.delete("/tasks/:id_task", (req, res) => {
 
 app.patch("/tasks/:id_task", (req, res) => {
     let id_task = Number(req.params.id_task)
-    const task_ = TaskList.find(task => task.id === id_task)
-
+    const task_ = db.prepare(`
+        SELECT *
+        FROM tasks
+        WHERE id = ?
+        `).get(id_task)
     if(!task_) {
         return res.status(404).json({
             message: "Задач таких нет"
@@ -259,8 +266,6 @@ app.patch("/tasks/:id_task", (req, res) => {
     }  if(req.body.priority !== undefined) {
         task_.priority = req.body.priority
     } 
-
-    saveTasks()
     res.status(200).json({
         message: "Задача обновлена"
     })

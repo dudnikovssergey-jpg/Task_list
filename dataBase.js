@@ -5,7 +5,7 @@ db.exec(`
         id INTEGER PRIMARY KEY AUTOINCREMENT, 
         title TEXT NOT NULL,
         priority TEXT NOT NULL,
-        completed INTEGER NOT NULL DEFAULT 0,
+        completed INTEGER NOT NULL DEFAULT 0
    ) 
 `)
 module.exports = db
