@@ -1,6 +1,7 @@
 const readline = require('readline')
 const fs = require('fs')
 const express = require('express')
+const db = require('./dataBase')
 const app = express()
 app.use(express.json())
 app.use(express.static('public'))
@@ -21,40 +22,108 @@ app.get("/about", (req, res) => {
 
 
 
+// app.get("/tasks", (req, res) => {
+//     loadTasks()
+//     const priority = req.query.priority
+//     const completed = req.query.completed
+//     const sort = req.query.sort
+//     const order = req.query.order
+//     let result = [...TaskList]
+//     if(completed === "true") {
+//        return res.json(TaskList.filter(task => task.completed === true)) 
+//     } if (completed === "false") {
+//        return res.json(TaskList.filter(task => task.completed === false)) 
+//     }
+//     if(priority) {
+//         const filtered_tasks = TaskList.filter(task => {
+//             return task.priority === priority
+//         })
+//         return res.json(filtered_tasks)
+//     } 
+
+//     if(sort === "id") {
+//         result.sort((a, b) => a.id - b.id)
+//     } if(sort === "title") {
+//         result.sort((a, b) => {
+//             return a.title.localeCompare(b.title)
+//         })
+//     }
+
+//     if(order === "desc") {
+//         result.reverse()
+//     }
+
+//     if(sort) {
+//         return res.json(result)
+//     }
+
 app.get("/tasks", (req, res) => {
-    loadTasks()
-    const priority = req.query.priority
     const completed = req.query.completed
     const sort = req.query.sort
     const order = req.query.order
-    let result = [...TaskList]
-    if(completed === "true") {
-       return res.json(TaskList.filter(task => task.completed === true)) 
-    } if (completed === "false") {
-       return res.json(TaskList.filter(task => task.completed === false)) 
-    }
+    const priority = req.quary.priority
     if(priority) {
-        const filtered_tasks = TaskList.filter(task => {
-            return task.priority === priority
-        })
-        return res.json(filtered_tasks)
-    } 
-
-    if(sort === "id") {
-        result.sort((a, b) => a.id - b.id)
-    } if(sort === "title") {
-        result.sort((a, b) => {
-            return a.title.localeCompare(b.title)
-        })
+       const tasks = db.prepare(`
+      SELECT *
+      FROM tasks
+      WHERE priority = ?  
+    `).all(priority)
+    res.json(tasks)  
     }
-
-    if(order === "desc") {
-        result.reverse()
+    if(completed === 'true') {
+        const tasks = db.prepare(`
+                SELECT * 
+                FROM TASKS
+                WHERE completed = 1
+            `)
+        return res.json(tasks)
     }
-
-    if(sort) {
-        return res.json(result)
+    if(completed === 'false') {
+        const tasks = db.prepare(`
+                SELECT * 
+                FROM TASKS
+                WHERE completed = 0
+            `)
+        return res.json(tasks)
     }
+    if(sort === 'id' && order === "asc") {
+        const tasks = db.prepare(`
+                SELECT * 
+                FROM TASKS
+                ORDER BY id ASC
+            `)
+         return res.json(tasks)
+    }
+    if(sort === 'id' && order === "desc") {
+        const tasks = db.prepare(`
+                SELECT * 
+                FROM TASKS
+                ORDER BY id DESC
+            `)
+         return res.json(tasks)
+    }
+    if(sort === 'title' && order === "asc") {
+         const tasks = db.prepare(`
+                SELECT * 
+                FROM TASKS
+                ORDER BY title ASC
+            `)
+         return res.json(tasks)
+    }
+     if(sort === 'title' && order === "desc") {
+         const tasks = db.prepare(`
+                SELECT * 
+                FROM TASKS
+                ORDER BY title DESC
+            `)
+         return res.json(tasks)
+    }
+    const tasks = db.prepare(`
+        SELECT *
+        FROM tasks  
+    `).all()
+    res.json(tasks) 
+}
 
     // const letter = req.query.letter
     // let found = false
